@@ -1,0 +1,22 @@
+# Ignore everything in the root except the "wp-content" directory
+/*
+!.gitignore
+!wp-content/
+
+# Ignore everything in the "wp-content" directory except the "mu-plugins", "plugins", and "themes" directories
+wp-content/*
+!wp-content/mu-plugins/
+!wp-content/plugins/
+!wp-content/themes/
+
+# Ignore specific files in the root
+wp-config.php
+.htaccess
+
+# Ignore backup files and directories
+*~
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+wp-content/uploads/
