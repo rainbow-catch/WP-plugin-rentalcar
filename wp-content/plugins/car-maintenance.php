@@ -171,7 +171,7 @@ function get_deadline_ajax_callback()
         <td>' . $result['targa'] . '</td>
         <td>' . $date->format('d/m/y') . '</td>
         <td>' . $result['descrizione'] . '</td>
-        <td><a href="javascript:;">edit</a></td>
+<td><a href="javascript:;">edit</a></td>
         </tr>';
     }
 
@@ -221,7 +221,7 @@ function get_maintenance_ajax_callback()
             <td>' . $result['date'] . '</td>
             <td>' . $result['descrizione'] . '</td>
             <td>' . $result['km'] . '</td>
-            <td><a href="javascript:;">edit</a></td>
+<td><a href="javascript:;">edit</a></td>
         </tr>';
     }
 
@@ -397,7 +397,7 @@ function maintenance_update_ajax_callback()
 $servername = "89.40.172.236"; // Replace with the hostname of your MySQL server
 $username = "thfcxywx_ciro"; // Replace with your MySQL username
 $password = "Rompi_coglione1"; // Replace with your MySQL password
-$dbname = "thfcxywx_clone"; // Replace with the name of your MySQL database
+$dbname = "thfcxywx_wp979"; // Replace with the name of your MySQL database
 
 // Create a connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -449,11 +449,11 @@ function car_maintenance_shortcode()
 
     $next_return = '<div id="next-return-div" class="col-12 col-lg-6 d-flex flex-column p-3">
     <div class="text-warning fs-5 d-flex justify-content-between">    
-        <span>NEXT RETURNS</span>
+        <span>PROSSIMI RIENTRI</span>
         <div class="d-flex gap-3">
             <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length" value="5" checked> 5</label>
             <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length" value="10"> 10</label>
-            <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length" value="all"> All</label>
+            <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length" value="all"> Tutti</label>
         </div>
         <div></div>
     </div>
@@ -461,10 +461,10 @@ function car_maintenance_shortcode()
         <table id="next_return_table" class="bg-transparent" style="border-spacing: 10px; width: 100%;">
             <thead>
                 <tr>
-                    <th>Order nr</th>
-                    <th>Customer</th>
+                    <th>Ordine</th>
+                    <th>Cliente</th>
                     <th>Auto</th>
-                    <th>Date return</th>
+                    <th>Data rientro</th>
                 </tr>
             </thead>
             <tbody>';
@@ -490,11 +490,11 @@ function car_maintenance_shortcode()
 
     $upcoming_deadline = '<div id="deadline-div" class="col-12 col-lg-6 d-flex flex-column p-3">
         <div class="text-warning fs-5 d-flex justify-content-between">    
-            <span>UPCOMING DEADLINES</span>
+            <span>PROSSIME SCADENZE</span>
             <div class="d-flex gap-3">
                 <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length1" value="5" checked> 5</label>
                 <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length1" value="10"> 10</label>
-                <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length1" value="all"> All</label>
+                <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length1" value="all"> Tutte</label>
             </div>
             <div></div>
         </div>
@@ -507,7 +507,7 @@ function car_maintenance_shortcode()
                         <th>Targa</th>
                         <th>Scadenza</th>
                         <th>Descrizione</th>
-                        <th></th>
+<th></th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -521,7 +521,7 @@ function car_maintenance_shortcode()
         <td>' . $result['targa'] . '</td>
         <td>' . $date->format('d/m/y') . '</td>
         <td>' . $result['descrizione'] . '</td>
-        <td><a href="javascript:;">edit</a></td>
+<td><a href="javascript:;">edit</a></td>
         </tr>';
     }
 
@@ -529,8 +529,8 @@ function car_maintenance_shortcode()
                 </tbody>
             </table>
             <div class="d-flex justify-content-center mt-3">
-                <button class="btn-add me-2" data-bs-toggle="modal" data-bs-target="#deadline-create-modal">Add new</button>
-                <button class="btn-delete-deadline">Delete</button>
+                <button class="btn-add me-2" data-bs-toggle="modal" data-bs-target="#deadline-create-modal">Nuovo</button>
+                <button class="btn-delete-deadline">Cancella</button>
             </div>
         </div>
     </div>';
@@ -557,9 +557,9 @@ function car_maintenance_shortcode()
 
     $search_targa = '<div class="col-12 col-lg-6 d-flex flex-column p-3">
         <div class="text-danger fs-5">    
-            <span>Search TARGA:</span>
+            <span>Ricerca TARGA:</span>
             <select id="search-targa-select">
-                <option disabled selected>- Please Select -</option>'. $options .
+                <option disabled selected>- Seleziona -</option>'. $options .
             '</select>
         </div>
         <div class="p-3 mt-3 overflow-hidden rounded-3 flex-grow-1 bg-azure">
@@ -571,28 +571,28 @@ function car_maintenance_shortcode()
             <table id="targa_search_table" class="bg-transparent" style="border-spacing: 10px; width: 100%;">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Description</th>
+                        <th>Data</th>
+                        <th>Descrizione</th>
                         <th>Km</th>
-                        <th>Deadline</th>
+                        <th>Scadenza</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
             <div class="d-flex justify-content-center mt-3">
-                <button class="btn-order-detail">See Orders</button>
+                <button class="btn-order-detail">Storico Ordini</button>
             </div>
         </div>  
     </div>';
 
     $kilometer_achieve = '<div id="achieved-div" class="col-12 col-lg-6 d-flex flex-column p-3">
         <div class="text-danger fs-5 d-flex justify-content-between">    
-            <span>Kilometers achieved(each 10,000km)</span>
+            <span>Prossime manutenzioni</span>
             <div class="d-flex gap-3">
                 <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length2" value="5" checked> 5</label>
                 <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length2" value="10"> 10</label>
-                <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length2" value="all"> All</label>
+                <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length2" value="all"> Tutti</label>
             </div>
             <div></div>
         </div>
@@ -602,7 +602,7 @@ function car_maintenance_shortcode()
                     <tr>
                         <th>Auto</th>
                         <th>Targa</th>
-                        <th>KM</th>
+                        <th>Km</th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -624,11 +624,11 @@ function car_maintenance_shortcode()
 
     $maintenance_list = '<div id="maintenance-div" class="col-12 p-3">
         <div class="text-white fs-5">    
-            <span>Maintenace List(each 10,000km)</span>
+            <span>Lista di Interventi Effettuati</span>
             <div class="d-flex gap-3">
                 <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length3" value="5" checked> 5</label>
                 <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length3" value="10"> 10</label>
-                <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length3" value="all"> All</label>
+                <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length3" value="all"> Tutti</label>
             </div>
             <div></div>
         </div>
@@ -639,10 +639,9 @@ function car_maintenance_shortcode()
                         <th></th>
                         <th>Auto</th>
                         <th>Targa</th>
-                        <th>Date</th>
-                        <th>Description</th>
+                        <th>Data</th>
+                        <th>Descrizione</th>
                         <th>Km</th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -665,8 +664,8 @@ function car_maintenance_shortcode()
     $maintenance_list .= '</tbody>
             </table>
             <div class="d-flex justify-content-center mt-3">
-                <button class="btn-add me-2" data-bs-toggle="modal" data-bs-target="#maintenance-create-modal">Add new</button>
-                <button class="btn-delete-maintenance">Delete</button>
+                <button class="btn-add me-2" data-bs-toggle="modal" data-bs-target="#maintenance-create-modal">Nuovo</button>
+                <button class="btn-delete-maintenance">Cancella</button>
             </div>
         </div>  
     </div>';
@@ -680,8 +679,8 @@ function car_maintenance_shortcode()
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add new deadline</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Aggiungi nuova scadenza</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -705,8 +704,8 @@ function car_maintenance_shortcode()
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary btn-save-deadline">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-primary btn-save-deadline">Salva</button>
                 </div>
             </div>
         </div>
@@ -715,7 +714,7 @@ function car_maintenance_shortcode()
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add new maintenance</h5>
+                    <h5 class="modal-title">Aggiungi nuova manutenzione</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -731,7 +730,7 @@ function car_maintenance_shortcode()
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Date</label>
+                        <label class="form-label">Data</label>
                         <input type="date" class="form-control date-input"/>
                     </div>
                     <div class="form-group">
@@ -744,8 +743,8 @@ function car_maintenance_shortcode()
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary btn-save-maintenance">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-primary btn-save-maintenance">Salva</button>
                 </div>
             </div>
         </div>
@@ -756,7 +755,7 @@ function car_maintenance_shortcode()
                 <div class="modal-header">
                     <h5 class="modal-title">Edit deadline</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+                    </div>
                 <div class="modal-body">
                     <input type="hidden" class="deadline-id"/>
                     <div class="form-group">
@@ -780,8 +779,8 @@ function car_maintenance_shortcode()
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary btn-update-deadline">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-primary btn-update-deadline">Salva</button>
                 </div>
             </div>
         </div>
@@ -820,8 +819,8 @@ function car_maintenance_shortcode()
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary btn-update-maintenance">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-primary btn-update-maintenance">Salva</button>
                 </div>
             </div>
         </div>
@@ -830,8 +829,8 @@ function car_maintenance_shortcode()
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Order Detail</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Storico Ordini</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -842,10 +841,10 @@ function car_maintenance_shortcode()
                     <table id="order-detail-table" class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>In</th>
-                                <th>Out</th>
+                                <th>Ordine</th>
+                                <th>Cliente</th>
+                                <th>Inizio</th>
+                                <th>Fine</th>
                             <tr>
                         </thead>
                         <tbody>
@@ -938,24 +937,24 @@ function car_maintenance_shortcode()
                     }
 
                     var maintenances = response['data']['maintenances'];
-                    var deadline = response['data']['deadline'];
+                                        var deadline = response['data']['deadline'];
 
-                    var trs = '';
+var trs = '';
                     $('.search-targa').text(targa);
 
                     if(maintenances.length != 0) {
-                        $('.search-auto').text(maintenances.at(-1)[1]);
-                        $('.search-km').text(maintenances.at(-1)[5]);
+                    $('.search-auto').text(maintenances.at(-1)[1]);
+                                        $('.search-km').text(maintenances.at(-1)[5]);
 
-                        maintenances.forEach(function(item) {
-                            trs += '<tr>\
-                                <td>' + convertDateFormat2(item[3]) + '</td>\
-                                <td>' + item[4] + '</td>\
-                                <td>' + item[5] + '</td>\
-                                <td></td>\
-                            </tr>';
-                        });
-                    }
+                                        maintenances.forEach(function(item) {
+                        trs += '<tr>\
+                            <td>' + convertDateFormat2(item[3]) + '</td>\
+                            <td>' + item[4] + '</td>\
+                            <td>' + item[5] + '</td>\
+                            <td></td>\
+                        </tr>';
+                    });
+}
                     else {
                         $('.search-km').text('Not found');
                         if(deadline==null) {
@@ -967,7 +966,7 @@ function car_maintenance_shortcode()
                         }
                     }
                     if(deadline) {
-                        $('.search-auto').text(deadline['auto']);
+$('.search-auto').text(deadline['auto']);
                         trs += '<tr>\
                             <td></td>\
                             <td>' + deadline['descrizione'] + '</td>\
@@ -998,7 +997,7 @@ function car_maintenance_shortcode()
 
             // add new deadline
             $('.btn-save-deadline').click(function(e) {
-                if(!validate('#deadline-create-modal')) {
+if(!validate('#deadline-create-modal')) {
                     alert('Please fill all the inputs');
                     return;
                 }
@@ -1025,7 +1024,7 @@ function car_maintenance_shortcode()
                 if(ids.length == 0)
                 {
                     alert('Nothing selected');
-                    return;
+return;
                 }
                 var data = {
                     'action': 'delete_deadline_ajax',
@@ -1040,7 +1039,7 @@ function car_maintenance_shortcode()
 
             // add new maintenance
             $('.btn-save-maintenance').click(function(e) {
-                if(!validate('#maintenance-create-modal')) {
+if(!validate('#maintenance-create-modal')) {
                     alert('Please fill all the inputs');
                     return;
                 }
@@ -1068,7 +1067,7 @@ function car_maintenance_shortcode()
                 if(ids.length == 0)
                 {
                     alert('Nothing selected');
-                    return;
+return;
                 }
                 var data = {
                     'action': 'delete_maintenance_ajax',
@@ -1220,7 +1219,7 @@ function car_maintenance_shortcode()
     </script>";
 
     $output = '<div class="container">
-        <h1>Car Maintenance</h1>
+        <h1>Manutenzione e Scadenze</h1>
         <div class="card" id="car-maintenance-body">
             <div class="card-body position-relative d-flex flex-wrap p-10 rounded-2 bg-dark-blue">
                 <div id="loading-spinner"></div>'
@@ -1248,8 +1247,8 @@ function get_full_name($custdata)
 function maintenance_menu() {
     // Create the main menu page
     add_menu_page(
-        'Maintenance',
-        'Maintenance',
+        'Manutenzione',
+        'Manutenzione',
         'manage_options',
         'maintenance',
         'maintenance_page_callback'
