@@ -10,7 +10,7 @@
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-define('MAIL_TO', 'milosbayar114@gmail.com'); //fabio.lisena@gmail.com
+define('MAIL_TO', 'fabio.lisena@gmail.com'); //test
 define('MAIL_FROM', 'italiamyrentcar@gmail.com');
 define('MAIL_FROM_NAME', 'Asstenza e Manutenzione');
 
