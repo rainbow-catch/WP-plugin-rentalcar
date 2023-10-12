@@ -1,64 +1,91 @@
 <?php
+/**
+ * Plugin Name: Car Maintenance
+ * Plugin URI: https://example.com/my-crud-plugin
+ * Description: Implements CRUD operations on the main page.
+ * Version: 1.0.0
+ * Author: Roderick
+ * Author URI: https://example.com
+ * License: GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ */
+
+define('MAIL_TO', 'milosbayar114@gmail.com'); //fabio.lisena@gmail.com
+define('MAIL_FROM', 'italiamyrentcar@gmail.com');
+define('MAIL_FROM_NAME', 'Asstenza e Manutenzione');
 
 // CSS
 function myplugin_add_head_styles()
 {
-    echo '
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <style>
-    .bg-dark-blue {
-        background-color: rgb(15, 58, 95);
+    global $pagenow;
+    if ( $pagenow == 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] == 'maintenance' ) {
+        echo '
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <style>
+        .card {
+            padding: 0 !important;
+            max-width: none !important;
+        }
+        select {
+            max-width: none !important;
+        }
+        .bg-dark-blue {
+            background-color: rgb(15, 58, 95);
+        }
+        .bg-pink {
+            background-color: rgb(228, 168, 196);
+        }
+        .bg-azure {
+            background-color: rgb(140, 224, 229);
+        }
+        thead, .text-danger {
+            color: rgb(207, 46, 46)
+        }
+        #loading-spinner {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+        
+        #loading-spinner::after {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            margin: -25px 0 0 -25px;
+            border: 5px solid #ccc;
+            border-top-color: #333;
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        </style>';
     }
-    .bg-pink {
-        background-color: rgb(228, 168, 196);
-    }
-    .bg-azure {
-        background-color: rgb(140, 224, 229);
-    }
-    thead, .text-danger {
-        color: rgb(207, 46, 46)
-    }
-    #loading-spinner {
-        display: none;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 9999;
-      }
-      
-      #loading-spinner::after {
-        content: "";
-        display: block;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 50px;
-        height: 50px;
-        margin: -25px 0 0 -25px;
-        border: 5px solid #ccc;
-        border-top-color: #333;
-        border-radius: 50%;
-        animation: spin 1s infinite linear;
-      }
-      
-      @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-    </style>';
 }
-add_action('wp_head', 'myplugin_add_head_styles');
+add_action('admin_head', 'myplugin_add_head_styles');
 
 // Script
 function my_plugin_scripts()
 {
-    wp_enqueue_script('jquery');
-    wp_enqueue_script( 'bootstrap-bundle', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js', array( 'jquery' ), '5.3.2', true );
+    global $pagenow;
+    if ( $pagenow == 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] == 'maintenance' ) {
+        wp_enqueue_script('jquery');
+        wp_enqueue_script( 'bootstrap-bundle', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js', array( 'jquery' ), '5.3.2', true );
+    }
 }
-add_action('wp_enqueue_scripts', 'my_plugin_scripts');
+add_action('admin_enqueue_scripts', 'my_plugin_scripts');
   
 // AJAX action to fetch data based on page length
 add_action('wp_ajax_get_next_return_ajax', 'get_next_return_ajax_callback');
@@ -93,6 +120,12 @@ add_action('wp_ajax_nopriv_search_targa_ajax', 'search_targa_ajax_callback');
 
 add_action('wp_ajax_order_detail_ajax', 'order_detail_ajax_callback');
 add_action('wp_ajax_nopriv_order_detail_ajax', 'order_detail_ajax_callback');
+
+add_action('wp_ajax_deadline_update_ajax', 'deadline_update_ajax_callback');
+add_action('wp_ajax_nopriv_deadline_update_ajax', 'deadline_update_ajax_callback');
+
+add_action('wp_ajax_maintenance_update_ajax', 'maintenance_update_ajax_callback');
+add_action('wp_ajax_nopriv_maintenance_update_ajax', 'maintenance_update_ajax_callback');
 
 function get_next_return_ajax_callback()
 {
@@ -138,6 +171,7 @@ function get_deadline_ajax_callback()
         <td>' . $result['targa'] . '</td>
         <td>' . $date->format('d/m/y') . '</td>
         <td>' . $result['descrizione'] . '</td>
+        <td><a href="javascript:;">edit</a></td>
         </tr>';
     }
 
@@ -187,6 +221,7 @@ function get_maintenance_ajax_callback()
             <td>' . $result['date'] . '</td>
             <td>' . $result['descrizione'] . '</td>
             <td>' . $result['km'] . '</td>
+            <td><a href="javascript:;">edit</a></td>
         </tr>';
     }
 
@@ -317,6 +352,46 @@ function order_detail_ajax_callback()
     wp_die();
 }
 
+function deadline_update_ajax_callback()
+{
+    global $conn2;
+    $id = $_POST['id'];
+    $auto = $_POST['auto'];
+    $targa = $_POST['targa'];
+    $scadenza = $_POST['scadenza'];
+    $description = $_POST['description'];
+    
+    $query = "UPDATE deadlines SET 
+        `auto` = '".$auto."', 
+        targa = '".$targa."', 
+        scadenza = '".$scadenza."', 
+        descrizione = '".$description."' WHERE id=".$id.";";
+    echo $query;
+    $results = $conn2->query($query);
+    wp_die();
+}
+
+function maintenance_update_ajax_callback()
+{
+    global $conn2;
+    $id = $_POST['id'];
+    $auto = $_POST['auto'];
+    $targa = $_POST['targa'];
+    $date = $_POST['date'];
+    $description = $_POST['description'];
+    $km = $_POST['km'];
+    
+    $query = "UPDATE intervento SET 
+        `auto` = '".$auto."', 
+        targa = '".$targa."', 
+        date = '".$date."', 
+        km = '".$km."', 
+        descrizione = '".$description."' WHERE id=".$id.";";
+    echo $query;
+    $results = $conn2->query($query);
+    wp_die();
+}
+
 
 // Connect to original DB
 $servername = "89.40.172.236"; // Replace with the hostname of your MySQL server
@@ -424,7 +499,7 @@ function car_maintenance_shortcode()
             <div></div>
         </div>
         <div class="p-3 mt-3 overflow-hidden rounded-3 flex-grow-1 bg-pink">
-            <table id="deadline_table" class="bg-transparent" style="border-spacing: 10px; width: 100%;">
+            <table id="deadline-table" class="bg-transparent" style="border-spacing: 10px; width: 100%;">
                 <thead>
                     <tr>
                         <th></th>
@@ -432,6 +507,7 @@ function car_maintenance_shortcode()
                         <th>Targa</th>
                         <th>Scadenza</th>
                         <th>Descrizione</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -445,6 +521,7 @@ function car_maintenance_shortcode()
         <td>' . $result['targa'] . '</td>
         <td>' . $date->format('d/m/y') . '</td>
         <td>' . $result['descrizione'] . '</td>
+        <td><a href="javascript:;">edit</a></td>
         </tr>';
     }
 
@@ -481,7 +558,7 @@ function car_maintenance_shortcode()
     $search_targa = '<div class="col-12 col-lg-6 d-flex flex-column p-3">
         <div class="text-danger fs-5">    
             <span>Search TARGA:</span>
-            <select id="search-targa-select" class="fs-5">
+            <select id="search-targa-select">
                 <option disabled selected>- Please Select -</option>'. $options .
             '</select>
         </div>
@@ -565,19 +642,23 @@ function car_maintenance_shortcode()
                         <th>Date</th>
                         <th>Description</th>
                         <th>Km</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>';
                     
     $results = $conn2->query("select * from intervento;");
     foreach ($results as $result) {
+        $date = new DateTime($result['date']);
+        $date->format('d/m/y');
         $maintenance_list .= '<tr>
             <td>' . '<input type="checkbox" data-id="' . $result['id'] . '">' . '</td>
             <td>' . $result['auto'] . '</td>
             <td>' . $result['targa'] . '</td>
-            <td>' . $result['date'] . '</td>
+            <td>' . $date->format('d/m/y') . '</td>
             <td>' . $result['descrizione'] . '</td>
             <td>' . $result['km'] . '</td>
+            <td><a href="javascript:;">edit</a></td>
         </tr>';
     }
             
@@ -596,7 +677,7 @@ function car_maintenance_shortcode()
         $car_options .='<option>' . $result['name'] . '</option>';
     }
     $modal = '<div class="modal" id="deadline-create-modal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add new deadline</h5>
@@ -669,6 +750,82 @@ function car_maintenance_shortcode()
             </div>
         </div>
     </div>
+    <div class="modal" id="deadline-edit-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit deadline</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" class="deadline-id"/>
+                    <div class="form-group">
+                        <label class="form-label">Auto</label>
+                        <select class="form-select auto-select">'
+                        . $car_options .
+                        '</select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Targa</label>
+                        <select class="form-select targa-select">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Scadenza</label>
+                        <input type="date" class="form-control scadenza-input"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descrizione</label>
+                        <input type="text" class="form-control description-input"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn-update-deadline">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="maintenance-edit-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit maintenance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" class="maintenance-id"/>
+                    <div class="form-group">
+                        <label class="form-label">Auto</label>
+                        <select class="form-select auto-select">'
+                        . $car_options .
+                        '</select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Targa</label>
+                        <select class="form-select targa-select">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control date-input"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descrizione</label>
+                        <input type="text" class="form-control description-input"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Km</label>
+                        <input type="number" class="form-control km-input"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn-update-maintenance">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal" id="oder-detail-modal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -705,6 +862,8 @@ function car_maintenance_shortcode()
     // AJAX functions to fetch from db and write to db
     $script .= "<script>
         jQuery(document).ready(function($) {
+
+
             // get next returns
             $('#next-return-div input[name=page_length]').change(function() {
                 var page_length = $(this).val();
@@ -728,7 +887,7 @@ function car_maintenance_shortcode()
                 };
                 $('#loading-spinner').show();
                 $.post('/wp-admin/admin-ajax.php', data, function(response) {
-                    $('#deadline_table tbody').html(response);
+                    $('#deadline-table tbody').html(response);
                     $('#loading-spinner').hide();
                 });
             });
@@ -779,33 +938,41 @@ function car_maintenance_shortcode()
                     }
 
                     var maintenances = response['data']['maintenances'];
-                    if(maintenances.length == 0) {
-                        alert('Not found');
-                        $('#loading-spinner').hide();
-                        return;
-                    }
                     var deadline = response['data']['deadline'];
 
-                    $('.search-auto').text(maintenances.at(-1)[1]);
-                    $('.search-targa').text(targa);
-                    $('.search-km').text(maintenances.at(-1)[5]);
-
                     var trs = '';
-                    maintenances.forEach(function(item) {
-                        trs += '<tr>\
-                            <td>' + item[3] + '</td>\
-                            <td>' + item[4] + '</td>\
-                            <td>' + item[5] + '</td>\
-                            <td></td>\
-                        </tr>';
-                    });
+                    $('.search-targa').text(targa);
 
+                    if(maintenances.length != 0) {
+                        $('.search-auto').text(maintenances.at(-1)[1]);
+                        $('.search-km').text(maintenances.at(-1)[5]);
+
+                        maintenances.forEach(function(item) {
+                            trs += '<tr>\
+                                <td>' + convertDateFormat2(item[3]) + '</td>\
+                                <td>' + item[4] + '</td>\
+                                <td>' + item[5] + '</td>\
+                                <td></td>\
+                            </tr>';
+                        });
+                    }
+                    else {
+                        $('.search-km').text('Not found');
+                        if(deadline==null) {
+                            alert('Not found');
+                            $('.search-auto').text('Not found');
+                            $('.search-targa').text('Not found');
+                            $('#loading-spinner').hide();
+                            return;
+                        }
+                    }
                     if(deadline) {
+                        $('.search-auto').text(deadline['auto']);
                         trs += '<tr>\
                             <td></td>\
                             <td>' + deadline['descrizione'] + '</td>\
                             <td></td>\
-                            <td>' + deadline['scadenza'] + '</td>\
+                            <td>' + convertDateFormat2(deadline['scadenza']) + '</td>\
                         </tr>';
                     }
                         
@@ -831,6 +998,10 @@ function car_maintenance_shortcode()
 
             // add new deadline
             $('.btn-save-deadline').click(function(e) {
+                if(!validate('#deadline-create-modal')) {
+                    alert('Please fill all the inputs');
+                    return;
+                }
                 var auto = $(e.currentTarget).val();
                 var data = {
                     'action': 'save_deadline_ajax',
@@ -848,9 +1019,14 @@ function car_maintenance_shortcode()
             // delete deadline
             $('.btn-delete-deadline').click(function(e) {
                 var ids = [];
-                $('#deadline_table input[type=\"checkbox\"]:checked').each(function() {
+                $('#deadline-table input[type=\"checkbox\"]:checked').each(function() {
                     ids.push($(this).data('id'));
                 });
+                if(ids.length == 0)
+                {
+                    alert('Nothing selected');
+                    return;
+                }
                 var data = {
                     'action': 'delete_deadline_ajax',
                     'ids': ids
@@ -864,6 +1040,10 @@ function car_maintenance_shortcode()
 
             // add new maintenance
             $('.btn-save-maintenance').click(function(e) {
+                if(!validate('#maintenance-create-modal')) {
+                    alert('Please fill all the inputs');
+                    return;
+                }
                 var auto = $(e.currentTarget).val();
                 var data = {
                     'action': 'save_maintenance_ajax',
@@ -885,6 +1065,11 @@ function car_maintenance_shortcode()
                 $('#maintenance_table input[type=\"checkbox\"]:checked').each(function() {
                     ids.push($(this).data('id'));
                 });
+                if(ids.length == 0)
+                {
+                    alert('Nothing selected');
+                    return;
+                }
                 var data = {
                     'action': 'delete_maintenance_ajax',
                     'ids': ids
@@ -920,15 +1105,129 @@ function car_maintenance_shortcode()
                     $('#loading-spinner').hide();
                 });
             });
+
+            // open edit deadline modal
+            $('#deadline-table a').click(function() {
+                \$parent = $(this).closest('tr');
+                id = \$parent.find('input').data('id');
+                auto = \$parent.children()[1].textContent;
+                targa = \$parent.children()[2].textContent;
+                date = \$parent.children()[3].textContent;
+                desc = \$parent.children()[4].textContent;
+                $('#deadline-edit-modal').find('.deadline-id').val(id);
+                $('#deadline-edit-modal').find('.auto-select').val(auto);
+                \$selectTarga = $('#deadline-edit-modal').find('.targa-select');
+                \$selectTarga.html('<option selected>'+ targa + '</option>');
+                $('#deadline-edit-modal').find('.scadenza-input').val(convertDateFormat(date));
+                $('#deadline-edit-modal').find('.description-input').val(desc);
+                $('#deadline-edit-modal').modal('show');
+            });
+
+            // save deadline
+            $('.btn-update-deadline').click(function() {
+                if(!validate('#deadline-edit-modal')) {
+                    alert('Please fill all the inputs');
+                    return;
+                }
+                var modal = $('#deadline-edit-modal');
+                var data = {
+                    'action': 'deadline_update_ajax',
+                    'id': $(modal).find('.deadline-id').val(),
+                    'auto': $(modal).find('.auto-select').val(),
+                    'targa': $(modal).find('.targa-select').val(),
+                    'scadenza': $(modal).find('.scadenza-input').val(),
+                    'description': $(modal).find('.description-input').val(),
+                };
+                $('#loading-spinner').show();
+                $.post('/wp-admin/admin-ajax.php', data, function(response) {
+                    console.log(response);
+                    location.reload();
+                });
+            });
+
+            // open edit maintenance modal
+            $('#maintenance_table a').click(function() {
+                \$parent = $(this).closest('tr');
+                id = \$parent.find('input').data('id');
+                auto = \$parent.children()[1].textContent;
+                targa = \$parent.children()[2].textContent;
+                date = \$parent.children()[3].textContent;
+                desc = \$parent.children()[4].textContent;
+                km = \$parent.children()[5].textContent;
+                $('#maintenance-edit-modal').find('.maintenance-id').val(id);
+                $('#maintenance-edit-modal').find('.auto-select').val(auto);
+                \$selectTarga = $('#maintenance-edit-modal').find('.targa-select');
+                \$selectTarga.html('<option selected>'+ targa + '</option>');
+                $('#maintenance-edit-modal').find('.date-input').val(convertDateFormat(date));
+                $('#maintenance-edit-modal').find('.description-input').val(desc);
+                $('#maintenance-edit-modal').find('.km-input').val(km);
+                $('#maintenance-edit-modal').modal('show');
+            });
+
+            // save maintenance
+            $('.btn-update-maintenance').click(function() {
+                if(!validate('#maintenance-edit-modal')) {
+                    alert('Please fill all the inputs');
+                    return;
+                }
+                var modal = $('#maintenance-edit-modal');
+                var data = {
+                    'action': 'maintenance_update_ajax',
+                    'id': $(modal).find('.maintenance-id').val(),
+                    'auto': $(modal).find('.auto-select').val(),
+                    'targa': $(modal).find('.targa-select').val(),
+                    'date': $(modal).find('.date-input').val(),
+                    'description': $(modal).find('.description-input').val(),
+                    'km': $(modal).find('.km-input').val(),
+                };
+                $('#loading-spinner').show();
+                $.post('/wp-admin/admin-ajax.php', data, function(response) {
+                    console.log(response);
+                    location.reload();
+                });
+            });
+
+            function validate(modalId) {
+                var forms = $(modalId + ' input, ' + modalId + ' select');
+                var res = true;
+                forms.each(function(i) {
+                    if($(forms[i]).val() == null || $(forms[i]).val() == '') {
+                        res = false;
+                    }
+                });
+                return res;
+            }
+            function convertDateFormat(dateString) {
+                var parts = dateString.split('/');
+                var year = parseInt(parts[2], 10)
+                var month = parseInt(parts[1], 10);
+                var day = parseInt(parts[0], 10);
+                return '20' + year + '-' + month + '-' + day;
+            }
+
+            function convertDateFormat2(dateString) {
+                var parts = dateString.split('-'); // Split the date string by '-'
+                var year = parts[0].substring(2); // Get the last two digits of the year
+                var month = parts[1]; // Get the month part
+                var day = parts[2]; // Get the day part
+              
+                // Concatenate the parts in the desired format
+                var convertedDate = day + '/' + month + '/' + year;
+              
+                return convertedDate;
+            }
         });
     </script>";
 
-    $output = '<div class="card wp-block">
-        <div class="card-body position-relative d-flex flex-wrap p-10 rounded-2 bg-dark-blue">
-            <div id="loading-spinner"></div>'
-            . $next_return . $upcoming_deadline . $search_targa . $kilometer_achieve . $maintenance_list .
-        '</div>' . $modal .
-    '</div>'. $script;
+    $output = '<div class="container">
+        <h1>Car Maintenance</h1>
+        <div class="card" id="car-maintenance-body">
+            <div class="card-body position-relative d-flex flex-wrap p-10 rounded-2 bg-dark-blue">
+                <div id="loading-spinner"></div>'
+                . $next_return . $upcoming_deadline . $search_targa . $kilometer_achieve . $maintenance_list .
+            '</div>' . $modal .
+        '</div>
+    </div>'. $script;
 
 
     return $output;
@@ -944,3 +1243,85 @@ function get_full_name($custdata)
     }
     return $full_name;
 }
+
+
+function maintenance_menu() {
+    // Create the main menu page
+    add_menu_page(
+        'Maintenance',
+        'Maintenance',
+        'manage_options',
+        'maintenance',
+        'maintenance_page_callback'
+    );
+}
+
+function maintenance_page_callback() {
+    // Output the content for the main menu page
+    echo shortcode_unautop( do_shortcode( '[car_maintenance]' ) );
+}
+
+add_action( 'admin_menu', 'maintenance_menu' );
+
+
+// Emailing
+add_filter( 'wp_mail_from', 'my_custom_mail_sender' );
+add_filter( 'wp_mail_from_name', 'my_custom_mail_sender_name' );
+
+function my_custom_mail_sender( $from_email ) {
+    // Set the email sender address
+    return MAIL_FROM;
+}
+
+function my_custom_mail_sender_name( $from_name ) {
+    // Set the email sender name
+    return MAIL_FROM_NAME;
+}
+
+// Schedule the email sending event to run every 1 hour
+add_action( 'wp', 'email_alert_cron_schedule' );
+function email_alert_cron_schedule() {
+    if ( ! wp_next_scheduled( 'email_alert_cron_event' ) ) {
+        wp_schedule_event( time(), 'every_minute', 'email_alert_cron_event' );
+    }
+}
+
+// Define the function to send the email
+add_action( 'email_alert_cron_event', 'my_custom_send_email_function' );
+function my_custom_send_email_function() {
+    global $conn;
+    global $basic_query;
+    // Add your email sending code here
+    $to = MAIL_TO;
+    $subject = 'CAR NON RIENTRATA IN ORARIO';
+    $message = '<h1>Car not entered.</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Order nr</th>
+                <th>Customer</th>
+                <th>Auto</th>
+                <th>Date return</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+    $results = $conn->query($basic_query.";");
+
+    foreach ($results as $result) {
+        $message .= '<tr>
+            <td>' . $result['id'] . '</td>
+            <td>' . get_full_name($result['custdata']) . '</td>
+            <td>' . $result['name'] . '</td>
+            <td>' . date("d/m/y H.i", $result['consegna']) . '</td>
+        </tr>';
+    }
+
+    $message .= "</tbody></table>";
+
+    $headers = array(
+        'Content-Type: text/html; charset=UTF-8'
+    );
+    wp_mail( $to, $subject, $message, $headers );
+}
+
