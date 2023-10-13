@@ -22,6 +22,9 @@ function myplugin_add_head_styles()
         echo '
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
         <style>
+        #wp-content {
+            background: lightgray;
+        }
         .card {
             padding: 0 !important;
             max-width: none !important;
@@ -669,7 +672,7 @@ function car_maintenance_shortcode()
         </div>  
     </div>';
 
-    $results = $conn->query("select name from wppe_vikrentcar_cars;");
+    $results = $conn->query("select name from wppe_vikrentcar_cars order by name;");
     $car_options = '';
     foreach ($results as $result) {
         $car_options .='<option>' . $result['name'] . '</option>';
