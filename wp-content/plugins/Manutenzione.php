@@ -2,10 +2,9 @@
 /**
  * Plugin Name: Car Maintenance
  * Plugin URI: https://example.com/my-crud-plugin
- * Description: Implements CRUD operations on the main page.
+ * Description: Implements maintenance operations for rental cars.
  * Version: 1.0.0
  * Author: Roderick
- * Author URI: https://example.com
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  */
@@ -13,6 +12,7 @@
 define('MAIL_TO', 'fabio.lisena@gmail.com'); //test
 define('MAIL_FROM', 'italiamyrentcar@gmail.com');
 define('MAIL_FROM_NAME', 'Asstenza e Manutenzione');
+define('TIME_OFFSET', 2);
 
 // CSS
 function myplugin_add_head_styles()
@@ -144,7 +144,7 @@ function get_next_return_ajax_callback()
         echo '<td>' . $result['id'] . '</td>';
         echo '<td>' . get_full_name($result['custdata']) . '</td>';
         echo '<td>' . $result['name'] . '</td>';
-        echo '<td>' . date("d/m/y H.i", $result['consegna']) . '</td>';
+        echo '<td>' . date("d/m/y H.i", $result['consegna'] + TIME_OFFSET * 3600) . '</td>';
         echo '</tr>';
     }
 
@@ -171,7 +171,7 @@ function get_deadline_ajax_callback()
         <td>' . $result['targa'] . '</td>
         <td>' . $date->format('d/m/y') . '</td>
         <td>' . $result['descrizione'] . '</td>
-<td><a href="javascript:;">edit</a></td>
+<td><a href="javascript:;">Modifica</a></td>
         </tr>';
     }
 
@@ -221,7 +221,7 @@ function get_maintenance_ajax_callback()
             <td>' . $result['date'] . '</td>
             <td>' . $result['descrizione'] . '</td>
             <td>' . $result['km'] . '</td>
-<td><a href="javascript:;">edit</a></td>
+<td><a href="javascript:;">Modifica</a></td>
         </tr>';
     }
 
@@ -246,7 +246,6 @@ function get_targa_ajax_callback()
             array_push($targas, $feature['TARGA']);
     }
 
-    asort($targas);
     asort($targas);
     foreach ($targas as $targa) {
         if($targa != '')
@@ -341,7 +340,7 @@ function order_detail_ajax_callback()
     foreach($results as $result) {
         $name = get_full_name($result['custdata']);
         $in = date("d/m/y H.i", $result['ritiro']);
-        $out = date("d/m/y H.i", $result['consegna']);
+        $out = date("d/m/y H.i", $result['consegna'] + TIME_OFFSET * 3600);
         echo "<tr>
             <td>" . $result['id'] . "</td>
             <td>" . $name . "</td>
@@ -410,7 +409,7 @@ $basic_query = "select wppe_vikrentcar_orders.id, custdata, wppe_vikrentcar_cars
     from wppe_vikrentcar_orders 
     inner join wppe_vikrentcar_cars on wppe_vikrentcar_cars.id = wppe_vikrentcar_orders.idcar
     left join wppe_vikrentcar_orderhistory on wppe_vikrentcar_orders.id = wppe_vikrentcar_orderhistory.idorder and wppe_vikrentcar_orderhistory.type = 'RC'
-    where wppe_vikrentcar_orderhistory.type is null
+    where wppe_vikrentcar_orderhistory.type is null and consegna < UNIX_TIMESTAMP()
     order by consegna desc";
 
 $conn2 = new mysqli($servername, $username, $password, "thfcxywx_Manutenzione"); //manutenzione
@@ -479,7 +478,7 @@ function car_maintenance_shortcode()
         $next_return .= '<td>' . $result['id'] . '</td>';
         $next_return .= '<td>' . get_full_name($result['custdata']) . '</td>';
         $next_return .= '<td>' . $result['name'] . '</td>';
-        $next_return .= '<td>' . date("d/m/y H.i", $result['consegna']) . '</td>';
+        $next_return .= '<td>' . date("d/m/y H.i", $result['consegna'] + TIME_OFFSET * 3600) . '</td>';
         $next_return .= '</tr>';
     }
 
@@ -521,7 +520,7 @@ function car_maintenance_shortcode()
         <td>' . $result['targa'] . '</td>
         <td>' . $date->format('d/m/y') . '</td>
         <td>' . $result['descrizione'] . '</td>
-<td><a href="javascript:;">edit</a></td>
+<td><a href="javascript:;">Modifica</a></td>
         </tr>';
     }
 
@@ -657,7 +656,7 @@ function car_maintenance_shortcode()
             <td>' . $date->format('d/m/y') . '</td>
             <td>' . $result['descrizione'] . '</td>
             <td>' . $result['km'] . '</td>
-            <td><a href="javascript:;">edit</a></td>
+            <td><a href="javascript:;">Modifica</a></td>
         </tr>';
     }
             
@@ -715,7 +714,7 @@ function car_maintenance_shortcode()
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Aggiungi nuova manutenzione</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -753,8 +752,8 @@ function car_maintenance_shortcode()
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit deadline</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Modifica Scadenza</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                     </div>
                 <div class="modal-body">
                     <input type="hidden" class="deadline-id"/>
@@ -789,8 +788,8 @@ function car_maintenance_shortcode()
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit maintenance</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Modifica Intervento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" class="maintenance-id"/>
@@ -852,7 +851,7 @@ function car_maintenance_shortcode()
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
                 </div>
             </div>
         </div>
@@ -956,11 +955,11 @@ var trs = '';
                     });
 }
                     else {
-                        $('.search-km').text('Not found');
+                        $('.search-km').text('Non trovato');
                         if(deadline==null) {
-                            alert('Not found');
-                            $('.search-auto').text('Not found');
-                            $('.search-targa').text('Not found');
+                            alert('Non trovato');
+                            $('.search-auto').text('Non trovato');
+                            $('.search-targa').text('Non trovato');
                             $('#loading-spinner').hide();
                             return;
                         }
@@ -998,7 +997,7 @@ $('.search-auto').text(deadline['auto']);
             // add new deadline
             $('.btn-save-deadline').click(function(e) {
 if(!validate('#deadline-create-modal')) {
-                    alert('Please fill all the inputs');
+                    alert('Compila tutti i campi');
                     return;
                 }
                 var auto = $(e.currentTarget).val();
@@ -1023,7 +1022,7 @@ if(!validate('#deadline-create-modal')) {
                 });
                 if(ids.length == 0)
                 {
-                    alert('Nothing selected');
+                    alert('Nessuna selezione');
 return;
                 }
                 var data = {
@@ -1040,7 +1039,7 @@ return;
             // add new maintenance
             $('.btn-save-maintenance').click(function(e) {
 if(!validate('#maintenance-create-modal')) {
-                    alert('Please fill all the inputs');
+                    alert('Compila tutti i campi');
                     return;
                 }
                 var auto = $(e.currentTarget).val();
@@ -1066,7 +1065,7 @@ if(!validate('#maintenance-create-modal')) {
                 });
                 if(ids.length == 0)
                 {
-                    alert('Nothing selected');
+                    alert('Nessuna selezione');
 return;
                 }
                 var data = {
@@ -1084,7 +1083,7 @@ return;
             $('.btn-order-detail').click(function(e) {
                 var targa = $('#search-targa-select').val();
                 if(targa == null) {
-                    alert('Please select targa');
+                    alert('Seleziona la Targa');
                     return;
                 }
                 var data = {
@@ -1125,7 +1124,7 @@ return;
             // save deadline
             $('.btn-update-deadline').click(function() {
                 if(!validate('#deadline-edit-modal')) {
-                    alert('Please fill all the inputs');
+                    alert('Compila tutti i campi');
                     return;
                 }
                 var modal = $('#deadline-edit-modal');
@@ -1166,7 +1165,7 @@ return;
             // save maintenance
             $('.btn-update-maintenance').click(function() {
                 if(!validate('#maintenance-edit-modal')) {
-                    alert('Please fill all the inputs');
+                    alert('Compila tutti i campi');
                     return;
                 }
                 var modal = $('#maintenance-edit-modal');
@@ -1281,7 +1280,7 @@ function my_custom_mail_sender_name( $from_name ) {
 add_action( 'wp', 'email_alert_cron_schedule' );
 function email_alert_cron_schedule() {
     if ( ! wp_next_scheduled( 'email_alert_cron_event' ) ) {
-        wp_schedule_event( time(), 'every_minute', 'email_alert_cron_event' );
+        wp_schedule_event( time(), 'hourly', 'email_alert_cron_event' );
     }
 }
 
@@ -1306,13 +1305,15 @@ function my_custom_send_email_function() {
         <tbody>';
 
     $results = $conn->query($basic_query.";");
+    if($results->num_rows == 0)
+        return;
 
     foreach ($results as $result) {
         $message .= '<tr>
             <td>' . $result['id'] . '</td>
             <td>' . get_full_name($result['custdata']) . '</td>
             <td>' . $result['name'] . '</td>
-            <td>' . date("d/m/y H.i", $result['consegna']) . '</td>
+            <td>' . date("d/m/y H.i", $result['consegna'] + TIME_OFFSET * 3600) . '</td>
         </tr>';
     }
 
