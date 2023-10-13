@@ -1284,6 +1284,13 @@ function my_custom_mail_sender_name($from_name)
     return MAIL_FROM_NAME;
 }
 
+function more_reccurences() {
+    return array(
+        '6hourly' => array('interval' => 21600, 'display' => 'Every 6 hours'),
+    );
+    }
+add_filter('cron_schedules', 'more_reccurences');
+
 // Schedule the email sending event to run every 1 hour
 
 // Define the function to send the email
@@ -1301,10 +1308,10 @@ function email_alert_cron_schedule()
     }
 
     if (!wp_next_scheduled('email_deadline_cron_event')) {
-        wp_schedule_event(time(), 'every_minute', 'email_deadline_cron_event'); // Change 'every_minute' to '6hourly' after test
+        wp_schedule_event(time(), '6hourly', 'email_deadline_cron_event'); // Change 'every_minute' to '6hourly' after test
     } else {
         wp_clear_scheduled_hook('email_deadline_cron_event');
-        wp_schedule_event(time(), 'every_minute', 'email_deadline_cron_event'); // Change 'every_minute' to '6hourly' after test
+        wp_schedule_event(time(), '6hourly', 'email_deadline_cron_event'); // Change 'every_minute' to '6hourly' after test
     }
 }
 
@@ -1366,7 +1373,7 @@ function send_email_deadline_function()
         </thead>
         <tbody>';
 
-    $results = $conn2->query("SELECT * FROM deadlines ORDER BY scadenza WHERE scadenza < (NOW() + INTERVAL 7 DAY);");
+    $results = $conn2->query("SELECT * FROM deadlines WHERE scadenza < (NOW() + INTERVAL 7 DAY) ORDER BY scadenza;");
     if ($results->num_rows == 0)
         return;
 
