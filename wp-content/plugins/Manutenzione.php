@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: Car Maintenance
  * Plugin URI: https://example.com/my-crud-plugin
@@ -11,19 +12,19 @@
 
 define('MAIL_TO', 'fabio.lisena@gmail.com'); //test
 define('MAIL_FROM', 'italiamyrentcar@gmail.com');
-define('MAIL_FROM_NAME', 'Asstenza e Manutenzione');
+define('MAIL_FROM_NAME', 'Assistenza e Manutenzione');
 define('TIME_OFFSET', 2);
 
 // CSS
 function myplugin_add_head_styles()
 {
     global $pagenow;
-    if ( $pagenow == 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] == 'maintenance' ) {
+    if ($pagenow == 'admin.php' && isset($_GET['page']) && $_GET['page'] == 'maintenance') {
         echo '
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
         <style>
-        #wp-content {
-            background: lightgray;
+        #wpcontent {
+            background: lightblue;
         }
         .card {
             padding: 0 !important;
@@ -83,13 +84,13 @@ add_action('admin_head', 'myplugin_add_head_styles');
 function my_plugin_scripts()
 {
     global $pagenow;
-    if ( $pagenow == 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] == 'maintenance' ) {
+    if ($pagenow == 'admin.php' && isset($_GET['page']) && $_GET['page'] == 'maintenance') {
         wp_enqueue_script('jquery');
-        wp_enqueue_script( 'bootstrap-bundle', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js', array( 'jquery' ), '5.3.2', true );
+        wp_enqueue_script('bootstrap-bundle', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js', array('jquery'), '5.3.2', true);
     }
 }
 add_action('admin_enqueue_scripts', 'my_plugin_scripts');
-  
+
 // AJAX action to fetch data based on page length
 add_action('wp_ajax_get_next_return_ajax', 'get_next_return_ajax_callback');
 add_action('wp_ajax_nopriv_get_next_return_ajax', 'get_next_return_ajax_callback');
@@ -184,7 +185,7 @@ function get_deadline_ajax_callback()
 function get_achieved_ajax_callback()
 {
     global $conn2;
-    $basic_query = "SELECT * FROM intervento WHERE km > 10000";
+    $basic_query = "SELECT * FROM intervento WHERE km > 10000 ORDER BY km DESC";
     $page_length = $_POST['page_length'];
     if ($page_length === 'all') {
         $query = $basic_query . ";";
@@ -207,7 +208,7 @@ function get_achieved_ajax_callback()
 function get_maintenance_ajax_callback()
 {
     global $conn2;
-    $basic_query = "SELECT * FROM intervento";
+    $basic_query = "SELECT * FROM intervento ORDER BY `date`";
     $page_length = $_POST['page_length'];
     if ($page_length === 'all') {
         $query = $basic_query . ";";
@@ -239,7 +240,7 @@ function get_targa_ajax_callback()
     // Get the first row of results
     $row = $results->fetch_assoc();
     $params = json_decode($row['params'], true);
-    
+
     $targas = [];
     // Get the first row of results
     foreach ($params['features'] as $feature) {
@@ -251,7 +252,7 @@ function get_targa_ajax_callback()
 
     asort($targas);
     foreach ($targas as $targa) {
-        if($targa != '')
+        if ($targa != '')
             echo '<option>' . $targa . '</option>';
     }
 
@@ -313,12 +314,12 @@ function search_targa_ajax_callback()
 {
     global $conn2;
     $targa = $_POST['targa'];
-    $query = "SELECT * FROM intervento WHERE targa='" . $targa . "'";
+    $query = "SELECT * FROM intervento WHERE targa='" . $targa . "' ORDER BY `date`";
     $maintenances = $conn2->query($query)->fetch_all();
-    
+
     $query = "SELECT * FROM deadlines WHERE targa='" . $targa . "'";
     $deadline = $conn2->query($query)->fetch_assoc();
-    
+
     $result = array(
         'success' => true,
         'data' => array(
@@ -337,10 +338,10 @@ function order_detail_ajax_callback()
     $query = "SELECT wppe_vikrentcar_orders.id, custdata, ritiro, consegna 
         FROM wppe_vikrentcar_orders LEFT JOIN wppe_vikrentcar_cars 
         ON wppe_vikrentcar_orders.idcar = wppe_vikrentcar_cars.id 
-        WHERE wppe_vikrentcar_cars.params LIKE '%" . $targa . "%';";
+        WHERE wppe_vikrentcar_cars.params LIKE '%" . $targa . "%' ORDER BY consegna;";
     $results = $conn->query($query);
-    
-    foreach($results as $result) {
+
+    foreach ($results as $result) {
         $name = get_full_name($result['custdata']);
         $in = date("d/m/y H.i", $result['ritiro']);
         $out = date("d/m/y H.i", $result['consegna'] + TIME_OFFSET * 3600);
@@ -362,12 +363,12 @@ function deadline_update_ajax_callback()
     $targa = $_POST['targa'];
     $scadenza = $_POST['scadenza'];
     $description = $_POST['description'];
-    
+
     $query = "UPDATE deadlines SET 
-        `auto` = '".$auto."', 
-        targa = '".$targa."', 
-        scadenza = '".$scadenza."', 
-        descrizione = '".$description."' WHERE id=".$id.";";
+        `auto` = '" . $auto . "', 
+        targa = '" . $targa . "', 
+        scadenza = '" . $scadenza . "', 
+        descrizione = '" . $description . "' WHERE id=" . $id . ";";
     echo $query;
     $results = $conn2->query($query);
     wp_die();
@@ -382,13 +383,13 @@ function maintenance_update_ajax_callback()
     $date = $_POST['date'];
     $description = $_POST['description'];
     $km = $_POST['km'];
-    
+
     $query = "UPDATE intervento SET 
-        `auto` = '".$auto."', 
-        targa = '".$targa."', 
-        date = '".$date."', 
-        km = '".$km."', 
-        descrizione = '".$description."' WHERE id=".$id.";";
+        `auto` = '" . $auto . "', 
+        targa = '" . $targa . "', 
+        date = '" . $date . "', 
+        km = '" . $km . "', 
+        descrizione = '" . $description . "' WHERE id=" . $id . ";";
     echo $query;
     $results = $conn2->query($query);
     wp_die();
@@ -451,7 +452,7 @@ function car_maintenance_shortcode()
 
     $next_return = '<div id="next-return-div" class="col-12 col-lg-6 d-flex flex-column p-3">
     <div class="text-warning fs-5 d-flex justify-content-between">    
-        <span>PROSSIMI RIENTRI</span>
+        <span>AUTO NON RIENTRATE</span>
         <div class="d-flex gap-3">
             <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length" value="5" checked> 5</label>
             <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length" value="10"> 10</label>
@@ -513,8 +514,8 @@ function car_maintenance_shortcode()
                     </tr>
                 </thead>
                 <tbody>';
-    
-    $results = $conn2->query("select * from deadlines;");
+
+    $results = $conn2->query("SELECT * FROM deadlines Order By scadenza;");
     foreach ($results as $result) {
         $date = new DateTime($result['scadenza']);
         $upcoming_deadline .= '<tr>
@@ -541,7 +542,7 @@ function car_maintenance_shortcode()
     $results = $conn->query("select params from wppe_vikrentcar_cars;");
     $targas = [];
     // Get the first row of results
-    foreach($results as $result) {
+    foreach ($results as $result) {
         $params = json_decode($result['params'], true);
         foreach ($params['features'] as $feature) {
             if (array_key_exists('Targa', $feature))
@@ -561,8 +562,8 @@ function car_maintenance_shortcode()
         <div class="text-danger fs-5">    
             <span>Ricerca TARGA:</span>
             <select id="search-targa-select">
-                <option disabled selected>- Seleziona -</option>'. $options .
-            '</select>
+                <option disabled selected>- Seleziona -</option>' . $options .
+        '</select>
         </div>
         <div class="p-3 mt-3 overflow-hidden rounded-3 flex-grow-1 bg-azure">
             <div class="mb-3">
@@ -608,8 +609,8 @@ function car_maintenance_shortcode()
                     </tr>
                 </thead>
                 <tbody>';
-                    
-    $results = $conn2->query("select * from intervento where km > 10000;");
+
+    $results = $conn2->query("SELECT * FROM intervento WHERE km > 10000 ORDER BY km DESC ;");
     foreach ($results as $result) {
         $kilometer_achieve .= '<tr>
             <td>' . $result['auto'] . '</td>
@@ -626,7 +627,7 @@ function car_maintenance_shortcode()
 
     $maintenance_list = '<div id="maintenance-div" class="col-12 p-3">
         <div class="text-white fs-5">    
-            <span>Lista di Interventi Effettuati</span>
+            <span>Interventi Effettuati</span>
             <div class="d-flex gap-3">
                 <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length3" value="5" checked> 5</label>
                 <label class="d-flex align-items-center"><input class="me-3" type="radio" name="page_length3" value="10"> 10</label>
@@ -647,7 +648,7 @@ function car_maintenance_shortcode()
                     </tr>
                 </thead>
                 <tbody>';
-                    
+
     $results = $conn2->query("select * from intervento;");
     foreach ($results as $result) {
         $date = new DateTime($result['date']);
@@ -662,7 +663,7 @@ function car_maintenance_shortcode()
             <td><a href="javascript:;">Modifica</a></td>
         </tr>';
     }
-            
+
     $maintenance_list .= '</tbody>
             </table>
             <div class="d-flex justify-content-center mt-3">
@@ -672,10 +673,10 @@ function car_maintenance_shortcode()
         </div>  
     </div>';
 
-    $results = $conn->query("select name from wppe_vikrentcar_cars order by name;");
+    $results = $conn->query("SELECT `name` FROM wppe_vikrentcar_cars ORDER BY `name`;");
     $car_options = '';
     foreach ($results as $result) {
-        $car_options .='<option>' . $result['name'] . '</option>';
+        $car_options .= '<option>' . $result['name'] . '</option>';
     }
     $modal = '<div class="modal" id="deadline-create-modal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -688,8 +689,8 @@ function car_maintenance_shortcode()
                     <div class="form-group">
                         <label class="form-label">Auto</label>
                         <select class="form-select auto-select">'
-                        . $car_options .
-                        '</select>
+        . $car_options .
+        '</select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Targa</label>
@@ -723,8 +724,8 @@ function car_maintenance_shortcode()
                     <div class="form-group">
                         <label class="form-label">Auto</label>
                         <select class="form-select auto-select">'
-                        . $car_options .
-                        '</select>
+        . $car_options .
+        '</select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Targa</label>
@@ -763,8 +764,8 @@ function car_maintenance_shortcode()
                     <div class="form-group">
                         <label class="form-label">Auto</label>
                         <select class="form-select auto-select">'
-                        . $car_options .
-                        '</select>
+        . $car_options .
+        '</select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Targa</label>
@@ -799,8 +800,8 @@ function car_maintenance_shortcode()
                     <div class="form-group">
                         <label class="form-label">Auto</label>
                         <select class="form-select auto-select">'
-                        . $car_options .
-                        '</select>
+        . $car_options .
+        '</select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Targa</label>
@@ -843,7 +844,7 @@ function car_maintenance_shortcode()
                     <table id="order-detail-table" class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Ordine</th>
+                                <th>Ord.</th>
                                 <th>Cliente</th>
                                 <th>Inizio</th>
                                 <th>Fine</th>
@@ -859,7 +860,7 @@ function car_maintenance_shortcode()
             </div>
         </div>
     </div>';
-    
+
     // AJAX functions to fetch from db and write to db
     $script .= "<script>
         jQuery(document).ready(function($) {
@@ -1225,10 +1226,10 @@ return;
         <div class="card" id="car-maintenance-body">
             <div class="card-body position-relative d-flex flex-wrap p-10 rounded-2 bg-dark-blue">
                 <div id="loading-spinner"></div>'
-                . $next_return . $upcoming_deadline . $search_targa . $kilometer_achieve . $maintenance_list .
-            '</div>' . $modal .
+        . $next_return . $upcoming_deadline . $search_targa . $kilometer_achieve . $maintenance_list .
+        '</div>' . $modal .
         '</div>
-    </div>'. $script;
+    </div>' . $script;
 
 
     return $output;
@@ -1246,7 +1247,8 @@ function get_full_name($custdata)
 }
 
 
-function maintenance_menu() {
+function maintenance_menu()
+{
     // Create the main menu page
     add_menu_page(
         'Manutenzione',
@@ -1257,58 +1259,76 @@ function maintenance_menu() {
     );
 }
 
-function maintenance_page_callback() {
+function maintenance_page_callback()
+{
     // Output the content for the main menu page
-    echo shortcode_unautop( do_shortcode( '[car_maintenance]' ) );
+    echo shortcode_unautop(do_shortcode('[car_maintenance]'));
 }
 
-add_action( 'admin_menu', 'maintenance_menu' );
+add_action('admin_menu', 'maintenance_menu');
 
 
 // Emailing
-add_filter( 'wp_mail_from', 'my_custom_mail_sender' );
-add_filter( 'wp_mail_from_name', 'my_custom_mail_sender_name' );
+add_filter('wp_mail_from', 'my_custom_mail_sender');
+add_filter('wp_mail_from_name', 'my_custom_mail_sender_name');
 
-function my_custom_mail_sender( $from_email ) {
+function my_custom_mail_sender($from_email)
+{
     // Set the email sender address
     return MAIL_FROM;
 }
 
-function my_custom_mail_sender_name( $from_name ) {
+function my_custom_mail_sender_name($from_name)
+{
     // Set the email sender name
     return MAIL_FROM_NAME;
 }
 
 // Schedule the email sending event to run every 1 hour
-add_action( 'wp', 'email_alert_cron_schedule' );
-function email_alert_cron_schedule() {
-    if ( ! wp_next_scheduled( 'email_alert_cron_event' ) ) {
-        wp_schedule_event( time(), 'hourly', 'email_alert_cron_event' );
+
+// Define the function to send the email
+add_action('wp', 'email_alert_cron_schedule');
+add_action('email_alert_cron_event', 'send_email_alert_function');
+add_action('email_deadline_cron_event', 'send_email_deadline_function');
+
+function email_alert_cron_schedule()
+{
+    if (!wp_next_scheduled('email_alert_cron_event')) {
+        wp_schedule_event(time(), 'hourly', 'email_alert_cron_event');
+    } else {
+        wp_clear_scheduled_hook('email_alert_cron_event');
+        wp_schedule_event(time(), 'hourly', 'email_alert_cron_event');
+    }
+
+    if (!wp_next_scheduled('email_deadline_cron_event')) {
+        wp_schedule_event(time(), 'every_minute', 'email_deadline_cron_event'); // Change 'every_minute' to '6hourly' after test
+    } else {
+        wp_clear_scheduled_hook('email_deadline_cron_event');
+        wp_schedule_event(time(), 'every_minute', 'email_deadline_cron_event'); // Change 'every_minute' to '6hourly' after test
     }
 }
 
-// Define the function to send the email
-add_action( 'email_alert_cron_event', 'my_custom_send_email_function' );
-function my_custom_send_email_function() {
+function send_email_alert_function()
+{
     global $conn;
     global $basic_query;
     // Add your email sending code here
     $to = MAIL_TO;
-    $subject = 'CAR NON RIENTRATA IN ORARIO';
-    $message = '<h1>Car not entered.</h1>
+    $subject = 'AUTO NON RIENTRATA IN ORARIO';
+    $message = '<h1>AUTO NON RIENTRATA.</h1>
     <table>
         <thead>
             <tr>
-                <th>Order nr</th>
-                <th>Customer</th>
+                <th>Ordine nr</th>
+                <th>Cliente</th>
                 <th>Auto</th>
-                <th>Date return</th>
+                <th>Data Scadenza</th>
             </tr>
         </thead>
         <tbody>';
 
-    $results = $conn->query($basic_query.";");
-    if($results->num_rows == 0)
+    $results = $conn->query($basic_query . ";");
+    if ($results->num_rows == 0)
         return;
 
     foreach ($results as $result) {
@@ -1325,6 +1345,45 @@ function my_custom_send_email_function() {
     $headers = array(
         'Content-Type: text/html; charset=UTF-8'
     );
-    wp_mail( $to, $subject, $message, $headers );
+    wp_mail($to, $subject, $message, $headers);
 }
 
+function send_email_deadline_function()
+{
+    global $conn2;
+    // Add your email sending code here
+    $to = MAIL_TO;
+    $subject = 'SCADENZA IN ARRIVO';
+    $message = '<h1>Upcomming Deadlines</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Car</th>
+                <th>Plate</th>
+                <th>Expiration</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+    $results = $conn2->query("SELECT * FROM deadlines ORDER BY scadenza WHERE scadenza < (NOW() + INTERVAL 7 DAY);");
+    if ($results->num_rows == 0)
+        return;
+
+    foreach ($results as $result) {
+        $date = new DateTime($result['scadenza']);
+        $message .= '<tr>
+            <td>' . $result['auto'] . '</td>
+            <td>' . $result['targa'] . '</td>
+            <td>' . $date->format('d/m/y') . '</td>
+            <td>' . $result['descrizione'] . '</td>
+        </tr>';
+    }
+
+    $message .= "</tbody></table>";
+
+    $headers = array(
+        'Content-Type: text/html; charset=UTF-8'
+    );
+    wp_mail($to, $subject, $message, $headers);
+}
