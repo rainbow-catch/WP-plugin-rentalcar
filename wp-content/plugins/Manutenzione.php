@@ -1284,38 +1284,25 @@ function my_custom_mail_sender_name($from_name)
     return MAIL_FROM_NAME;
 }
 
-function more_reccurences() {
-    return array(
-        '6hourly' => array('interval' => 21600, 'display' => 'Every 6 hours'),
-    );
-    }
-add_filter('cron_schedules', 'more_reccurences');
-
 // Schedule the email sending event to run every 1 hour
 
 // Define the function to send the email
 add_action('wp', 'email_alert_cron_schedule');
-add_action('email_alert_cron_event', 'send_email_alert_function');
-add_action('email_deadline_cron_event', 'send_email_deadline_function');
+add_action('email_order_alert_cron_event', 'send_email_order_alert_function');
+add_action('email_deadline_alert_cron_event', 'send_email_deadline_alert_function');
 
 function email_alert_cron_schedule()
 {
-    if (!wp_next_scheduled('email_alert_cron_event')) {
-        wp_schedule_event(time(), 'hourly', 'email_alert_cron_event');
-    } else {
-        wp_clear_scheduled_hook('email_alert_cron_event');
-        wp_schedule_event(time(), 'hourly', 'email_alert_cron_event');
-    }
+    if (!wp_next_scheduled('email_order_alert_cron_event')) {
+        wp_schedule_event(time(), 'hourly', 'email_order_alert_cron_event');
+    } 
 
-    if (!wp_next_scheduled('email_deadline_cron_event')) {
-        wp_schedule_event(time(), '6hourly', 'email_deadline_cron_event'); // Change 'every_minute' to '6hourly' after test
-    } else {
-        wp_clear_scheduled_hook('email_deadline_cron_event');
-        wp_schedule_event(time(), '6hourly', 'email_deadline_cron_event'); // Change 'every_minute' to '6hourly' after test
-    }
+    if (!wp_next_scheduled('email_deadline_alert_cron_event')) {
+        wp_schedule_event(time(), '6hourly', 'email_deadline_alert_cron_event'); // Change 'every_minute' to '6hourly' after test
+    } 
 }
 
-function send_email_alert_function()
+function send_email_order_alert_function()
 {
     global $conn;
     global $basic_query;
@@ -1355,7 +1342,7 @@ function send_email_alert_function()
     wp_mail($to, $subject, $message, $headers);
 }
 
-function send_email_deadline_function()
+function send_email_deadline_alert_function()
 {
     global $conn2;
     // Add your email sending code here
@@ -1394,3 +1381,9 @@ function send_email_deadline_function()
     );
     wp_mail($to, $subject, $message, $headers);
 }
+function more_reccurences() {
+    return array(
+        '6hourly' => array('interval' => 21600, 'display' => 'Every 6 hours'),
+    );
+    }
+add_filter('cron_schedules', 'more_reccurences');
