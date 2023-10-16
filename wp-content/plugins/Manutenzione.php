@@ -338,7 +338,7 @@ function order_detail_ajax_callback()
     $query = "SELECT wppe_vikrentcar_orders.id, custdata, ritiro, consegna 
         FROM wppe_vikrentcar_orders LEFT JOIN wppe_vikrentcar_cars 
         ON wppe_vikrentcar_orders.idcar = wppe_vikrentcar_cars.id 
-        WHERE wppe_vikrentcar_cars.params LIKE '%" . $targa . "%' ORDER BY consegna;";
+        WHERE wppe_vikrentcar_cars.params LIKE '%" . $targa . "%' ORDER BY ritiro DESC;";
     $results = $conn->query($query);
 
     foreach ($results as $result) {
@@ -1253,7 +1253,7 @@ function maintenance_menu()
     add_menu_page(
         'Manutenzione',
         'Manutenzione',
-        'manage_options',
+        'read',
         'maintenance',
         'maintenance_page_callback'
     );
